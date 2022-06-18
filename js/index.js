@@ -96,11 +96,13 @@ function onGetUrlClick(e){
 
 function onCheckAllClick(e){
     $('[name="links"]').each((index, value) => {
-        if(e.currentTarget.checked){
-            value.checked = true;
-        }
-        else{
-            value.checked = false;
+        if($(value).parent().css("display") !== "none"){
+            if(e.currentTarget.checked){
+                value.checked = true;
+            }
+            else{
+                value.checked = false;
+            }
         }
     });
 }
@@ -118,7 +120,10 @@ function onCopyLinksClick(e){
 
 function onFilterInputChange(e){
     $('.link').each((index, value) => {
+        $(value).unmark();
         if(value.textContent.includes(e.currentTarget.value)){
+            const mark = new Mark(value);
+            mark.mark(e.currentTarget.value);
             $(value).show();
         }
         else{
