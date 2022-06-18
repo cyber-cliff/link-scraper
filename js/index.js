@@ -5,6 +5,8 @@ const resultsDiv = document.getElementById("results");
 const copyLinksBtn = document.getElementById("copy-links");
 const checkAllCheckbox = document.getElementById("check-all");
 const checkAllLabel = document.getElementById("check-all-label");
+const filterLabel = document.getElementById("filter-label");
+const filterInp = document.getElementById("filter");
 
 const PROXY_URL = "/link-scraper/api/index.php";
 
@@ -152,12 +154,16 @@ function toggleResultFormState(disabled = true){
         copyLinksBtn.disabled = false;
         checkAllCheckbox.disabled = false;
         checkAllLabel.classList.remove("text-muted");
+        filterLabel.classList.remove("text-muted","bg-white");
+        filterInp.disabled = false;
     }
     else{
         // Need to change state to disabled
         copyLinksBtn.disabled = true;
         checkAllCheckbox.disabled = true;
         checkAllLabel.classList.add("text-muted");
+        filterLabel.classList.add("text-muted","bg-white");
+        filterInp.disabled = true;
     }
 }
 
