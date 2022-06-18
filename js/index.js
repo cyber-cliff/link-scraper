@@ -55,7 +55,8 @@ async function parsePageData(data){
             return value;
         }
         else{
-            let prefix = urlInp.value.trim();
+            const url = new URL(urlInp.value.trim());
+            let prefix = url.origin;
             if(prefix.endsWith("/") && value.startsWith("/")){
                 prefix = prefix.slice(0, -1);
             }
@@ -99,6 +100,17 @@ function onCheckAllClick(e){
     });
 }
 
+function onCopyLinksClick(e){
+    e.preventDefault();
+    let links = [];
+    $('input[name="links"]:checked').each((index, value) => {
+        links.push($(value).parent().text());
+    });
+    createToast("Copied " + links.length + " link(s)", 3000).showToast();
+    let textToCopy = links.join("\n");
+    navigator.clipboard.writeText(textToCopy);
+}
+
 
 
 
@@ -124,7 +136,7 @@ function displayLinks(linksArr){
             class: 'list-group'
         });
         linksArr.forEach(link => {
-            $(`<label class="list-group-item"><input type="checkbox" name="links" class="form-check-input me-1" value="" /> ${link}</label>`).appendTo(div);
+            $(`<label class="list-group-item"><input type="checkbox" name="links" class="form-check-input me-1" value="" />${link}</label>`).appendTo(div);
         });
         div.appendTo(resultsDiv);
     }
