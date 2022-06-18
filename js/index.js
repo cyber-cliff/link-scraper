@@ -13,6 +13,7 @@ const PROXY_URL = "/link-scraper/api/index.php";
 getLinksBtn.addEventListener("click", onGetUrlClick);
 checkAllCheckbox.addEventListener("click", onCheckAllClick);
 copyLinksBtn.addEventListener("click", onCopyLinksClick);
+filterInp.addEventListener("input", onFilterInputChange);
 
 /*
 * Sends a POST request to the backend which will then send a GET request to given URL
@@ -115,6 +116,17 @@ function onCopyLinksClick(e){
     navigator.clipboard.writeText(textToCopy);
 }
 
+function onFilterInputChange(e){
+    $('.link').each((index, value) => {
+        if(value.textContent.includes(e.currentTarget.value)){
+            $(value).show();
+        }
+        else{
+            $(value).hide();
+        }
+    });
+}
+
 
 
 
@@ -142,7 +154,7 @@ function displayLinks(linksArr){
             class: 'list-group'
         });
         linksArr.forEach(link => {
-            $(`<label class="list-group-item"><input type="checkbox" name="links" class="form-check-input me-1" value="" />${link}</label>`).appendTo(div);
+            $(`<label class="list-group-item link"><input type="checkbox" name="links" class="form-check-input me-1" value="" />${link}</label>`).appendTo(div);
         });
         div.appendTo(resultsDiv);
     }
