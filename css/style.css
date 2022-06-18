@@ -1,0 +1,15 @@
+.form-check#check-all-container{
+    padding-left: 0;
+    margin-bottom: 0px;
+}
+
+.form-check-input#check-all{
+    float: none;
+    margin-left: 0px;
+}
+
+#result-form{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
