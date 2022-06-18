@@ -75,6 +75,8 @@ async function parsePageData(data){
 
 
 
+
+
 function onGetUrlClick(e){
     e.preventDefault();
     toggleResultFormState(false);
@@ -110,6 +112,8 @@ function onCopyLinksClick(e){
     let textToCopy = links.join("\n");
     navigator.clipboard.writeText(textToCopy);
 }
+
+
 
 
 

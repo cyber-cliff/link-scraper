@@ -13,3 +13,7 @@
     align-items: center;
     justify-content: space-between;
 }
+
+#filter{
+    padding: 2px;
+}
