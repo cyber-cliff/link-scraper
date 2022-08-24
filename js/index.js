@@ -9,7 +9,7 @@ const filterLabel = document.getElementById("filter-label");
 const filterInp = document.getElementById("filter");
 
 // const PROXY_URL = "/link-scraper/api/index.php";
-const PROXY_URL = "../api/index.php"
+const PROXY_URL = "./api/index.php"
 
 getLinksBtn.addEventListener("click", onGetUrlClick);
 checkAllCheckbox.addEventListener("click", onCheckAllClick);
