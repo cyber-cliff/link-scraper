@@ -43,9 +43,14 @@ async function parsePageData(data){
     const html = $.parseHTML( data );
     // Get all the <a> tags from the parsed html
     const anchorTags = $(html).find("a");
+    // Get all <img> tags from the parsed html
+    const imageTags = $(html).find("img")
     // Get all the links (hrefs) from the <a> tags
     const links = $.map(anchorTags, function (value, index) {
         return $(value).attr("href")
+    });
+    const srcs = $.map(imageTags, function (value, index) {
+        return $(value).attr("src")
     });
     // Filter the links array to drop any links that arent useful (null, #id)
     const validLinks = links.filter(link => {
@@ -73,6 +78,7 @@ async function parsePageData(data){
         }
     });
     displayLinks(finalLinks);
+    displayImageSources(srcs)
 }
 
 
@@ -163,6 +169,22 @@ function displayLinks(linksArr){
         });
         linksArr.forEach(link => {
             $(`<label class="list-group-item link"><input type="checkbox" name="links" class="form-check-input me-1" value="" /><span class="mx-3">${link}</span></label>`).appendTo(div);
+        });
+        div.appendTo(resultsDiv);
+    }
+}
+
+function displayImageSources(srcs){
+    if(srcs.length === 0){
+        $(`<div class="text-center fs-2">No Images Found</div>`).appendTo(resultsDiv);
+    }
+    else{
+        toggleResultFormState(true);
+        const div = $('<div>', {
+            class: 'list-group'
+        });
+        srcs.forEach(src => {
+            $(`<label class="list-group-item link"><input type="checkbox" name="links" class="form-check-input me-1" value="" /><span class="mx-3">${src}</span></label>`).appendTo(div);
         });
         div.appendTo(resultsDiv);
     }
