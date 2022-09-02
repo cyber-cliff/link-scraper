@@ -29,10 +29,12 @@ async function getPageData(){
     })
     .then((response) => response.data)
     .catch((error) => {
-        const errorText = "An error occurred";
+        let errorText = "An error occurred";
+        if(error.response.data.status === 400){
+            // Bad Request
+            errorText = "Please provide a valid URL"
+        }
         createToast(errorText, 5000).showToast();
-        console.log(error.response);
-        throw new Error(error);
     });
 };
 
@@ -89,7 +91,7 @@ function onGetUrlClick(e){
     .catch((error) => {
         const errorText = "An error occurred";
         createToast(errorText, 5000).showToast();
-        console.log(error.response);
+        console.log(error);
         throw new Error(error);
     })
     .finally(() => loadingToast.hideToast());
@@ -160,7 +162,7 @@ function displayLinks(linksArr){
             class: 'list-group'
         });
         linksArr.forEach(link => {
-            $(`<label class="list-group-item link"><input type="checkbox" name="links" class="form-check-input me-1" value="" />${link}</label>`).appendTo(div);
+            $(`<label class="list-group-item link"><input type="checkbox" name="links" class="form-check-input me-1" value="" /><span class="mx-3">${link}</span></label>`).appendTo(div);
         });
         div.appendTo(resultsDiv);
     }

@@ -12,6 +12,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
 }
 
 #filter{
@@ -22,4 +23,16 @@ mark{
     background: skyblue;
     color: inherit;
     padding: 0;
+}
+
+
+
+
+
+
+
+@media (max-width: 770px) {
+    #result-form{
+        justify-content: space-evenly;
+    }
 }
