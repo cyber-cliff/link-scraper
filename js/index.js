@@ -54,7 +54,7 @@ async function parsePageData(data){
         // set links
         links = getLinksFromHTML(html, tag)
         // display them on the page
-        displayLinks(links);
+        displayLinks(links, "Hyperlinks");
     }
     if(imagesCheckbox.checked){
         // change tag values => <img> tag
@@ -62,7 +62,7 @@ async function parsePageData(data){
         // set srcs
         srcs = getLinksFromHTML(html, tag)
         // display them on the page
-        displayImageSources(srcs)
+        displayLinks(srcs, "Images")
     }
 }
 
@@ -143,33 +143,20 @@ function clearPreviousResults(){
     $(resultsDiv).empty();
 }
 
-function displayLinks(linksArr){
-    if(linksArr.length === 0){
-        $(`<div class="text-center fs-2">No Links Found</div>`).appendTo(resultsDiv);
+function displayLinks(arr, title){
+    // display section title
+    $(`<h2 class="mt-4">${title}</h2>`).appendTo(resultsDiv);
+    // If there were no links found, display message
+    if(arr.length === 0){
+        $(`<div class="text-center fs-2">Not Found</div>`).appendTo(resultsDiv);
     }
     else{
         toggleResultFormState(true);
         const div = $('<div>', {
             class: 'list-group'
         });
-        linksArr.forEach(link => {
+        arr.forEach(link => {
             $(`<label class="list-group-item link"><input type="checkbox" name="links" class="form-check-input me-1" value="" /><span class="mx-3">${link}</span></label>`).appendTo(div);
-        });
-        div.appendTo(resultsDiv);
-    }
-}
-
-function displayImageSources(srcs){
-    if(srcs.length === 0){
-        $(`<div class="text-center fs-2">No Images Found</div>`).appendTo(resultsDiv);
-    }
-    else{
-        toggleResultFormState(true);
-        const div = $('<div>', {
-            class: 'list-group'
-        });
-        srcs.forEach(src => {
-            $(`<label class="list-group-item link"><input type="checkbox" name="links" class="form-check-input me-1" value="" /><span class="mx-3">${src}</span></label>`).appendTo(div);
         });
         div.appendTo(resultsDiv);
     }
@@ -195,33 +182,46 @@ function toggleResultFormState(disabled = true){
 }
 
 function getLinksFromHTML(html, tag){
-    // Get all the <a> tags from the parsed html
+    // Get all the tags from the parsed html
     const tags = $(html).find(tag.name);
+    // From all the tags, return the value of the provided attribute
     const links = $.map(tags, function (value, index) {
         return $(value).attr(tag.attr)
     });
-    // Filter the links array to drop any links that arent useful (null, #id)
+    // Filter the array to drop any links that arent useful (null, #id)
     const validLinks = links.filter(link => {
+        // Check if link is not empty and make sure it is not an id
         if(link && !link.startsWith("#")){
             return link;
         }
     });
-    let validUniqueLinks = new Set(validLinks);
-    validUniqueLinks = Array.from(validUniqueLinks);
+    // Remove all duplicate links from the array by converting to set
+    let validUniqueLinks = Array.from(new Set(validLinks));
     // Convert all the relative links to absolute links
     const finalLinks = $.map(validUniqueLinks, function (value, index) {
+        // If it already starts with http, assume the link is already absolute
         if(value.startsWith("https://") || value.startsWith("http://")){
             return value;
         }
         else{
+            // Create URL from what we inputted
             const url = new URL(urlInp.value.trim());
+            // Get the beginning part of the URL (https://example.com)
             let prefix = url.origin;
+            // Now we combine the prefix to the relative URL to make an abosolute URL,
+            // First, handle the double slash situation (https://example.com//relative)
             if(prefix.endsWith("/") && value.startsWith("/")){
+                // remove last character (/) in prefix so there is no double slash
+                // https://example.com//relative => https://example.com/relative
                 prefix = prefix.slice(0, -1);
             }
+            // Second, handle the no slash situation (https://example.comrelative)
             else if(!prefix.endsWith("/") && !value.startsWith("/")){
+                // Adding "/" to the end of the prefix
+                // https://example.comrelative => https://example.com/relative
                 prefix = prefix + "/";
             }
+            // https://example.com + /relative
             return prefix + value;
         }
     });
