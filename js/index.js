@@ -44,14 +44,24 @@ async function parsePageData(data){
     // Parse the html
     const html = $.parseHTML( data );
     let links, srcs
-    console.log(hyperlinksCheckbox);
+    let tag = {
+        name: "",
+        attr: ""
+    }
     if(hyperlinksCheckbox.checked){
-        links = getHyperlinksFromHTML(html)
-        console.log(links);
+        // change tag values => <a> tag
+        tag.name = "a", tag.attr = "href"
+        // set links
+        links = getLinksFromHTML(html, tag)
+        // display them on the page
         displayLinks(links);
     }
     if(imagesCheckbox.checked){
-        srcs = getImageSrcsFromHTML(html)
+        // change tag values => <img> tag
+        tag.name = "img", tag.attr = "src"
+        // set srcs
+        srcs = getLinksFromHTML(html, tag)
+        // display them on the page
         displayImageSources(srcs)
     }
 }
@@ -184,11 +194,11 @@ function toggleResultFormState(disabled = true){
     }
 }
 
-function getHyperlinksFromHTML(html){
+function getLinksFromHTML(html, tag){
     // Get all the <a> tags from the parsed html
-    const anchorTags = $(html).find("a");
-    const links = $.map(anchorTags, function (value, index) {
-        return $(value).attr("href")
+    const tags = $(html).find(tag.name);
+    const links = $.map(tags, function (value, index) {
+        return $(value).attr(tag.attr)
     });
     // Filter the links array to drop any links that arent useful (null, #id)
     const validLinks = links.filter(link => {
@@ -216,16 +226,6 @@ function getHyperlinksFromHTML(html){
         }
     });
     return finalLinks
-}
-
-function getImageSrcsFromHTML(html){
-    // Get all <img> tags from the parsed html
-    const imageTags = $(html).find("img")
-    // Get all the links (hrefs) from the <a> tags
-    const srcs = $.map(imageTags, function (value, index) {
-        return $(value).attr("src")
-    });
-    return srcs
 }
 
 /**
