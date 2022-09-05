@@ -44,8 +44,10 @@ async function parsePageData(data){
     // Parse the html
     const html = $.parseHTML( data );
     let links, srcs
+    console.log(hyperlinksCheckbox);
     if(hyperlinksCheckbox.checked){
         links = getHyperlinksFromHTML(html)
+        console.log(links);
         displayLinks(links);
     }
     if(imagesCheckbox.checked){
@@ -220,9 +222,10 @@ function getImageSrcsFromHTML(html){
     // Get all <img> tags from the parsed html
     const imageTags = $(html).find("img")
     // Get all the links (hrefs) from the <a> tags
-    srcs = $.map(imageTags, function (value, index) {
+    const srcs = $.map(imageTags, function (value, index) {
         return $(value).attr("src")
     });
+    return srcs
 }
 
 /**
