@@ -207,7 +207,7 @@ function displayLinks(arr, title){
             class: 'list-group'
         });
         arr.forEach(link => {
-            $(`<label class="list-group-item link"><input type="checkbox" name="links" class="form-check-input me-1" value="" /><span class="mx-3">${link}</span></label>`).appendTo(div);
+            $(`<label class="list-group-item link"><input type="checkbox" name="links" class="form-check-input" value="" /><span class="mx-1 d-inline-block">${link}</span></label>`).appendTo(div);
         });
         div.appendTo(resultsDiv);
     }
@@ -261,8 +261,9 @@ function getLinksFromHTML(html, tag){
     let validUniqueLinks = Array.from(new Set(validLinks));
     // Convert all the relative links to absolute links
     const finalLinks = $.map(validUniqueLinks, function (value, index) {
-        // If it already starts with http, assume the link is already absolute
-        if(value.startsWith("https://") || value.startsWith("http://")){
+        // If it already starts with http or https, assume the link is already absolute
+        // The other option is if the image is Base64, in which case it will start with data
+        if(value.startsWith("https://") || value.startsWith("http://") || value.startsWith("data")){
             return value;
         }
         else{

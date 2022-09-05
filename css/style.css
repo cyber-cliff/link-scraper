@@ -25,6 +25,26 @@ mark{
     padding: 0;
 }
 
+.link{
+    display: flex;
+    align-items: center;
+    max-width: 100%;
+    word-wrap: break-word;
+    word-break: break-all;
+    padding: 0.5rem;
+}
+
+.link input{
+    width: 16px;
+    height: 16px;
+    margin: 0 0.5rem;
+    flex-shrink: 0;
+}
+
+.link span{
+    margin: 0 0.5rem;
+}
+
 
 
 
