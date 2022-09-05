@@ -137,7 +137,9 @@ function onCopyLinksClick(e){
     let links = [];
     // Get text value of every element with the attribute name="links" and add that text to the links array above
     $('input[name="links"]:checked').each((index, value) => {
-        links.push($(value).parent().text());
+        if($(value).css("display") !== "none"){
+            links.push($(value).parent().text());
+        }
     });
     // Take each element in the array and combine it so that each link is on its own line
     let textToCopy = links.join("\n");
@@ -166,7 +168,10 @@ function onFilterInputChange(e){
             $(value).show();
         }
         else{
-            // If link doesnt contain filter text, hide the element
+            // If link doesnt contain filter text...
+            // First, Uncheck the checkbox after hiding
+            $(value).find("input").prop("checked", false)
+            // Finally, hide the element
             $(value).hide();
         }
     });
@@ -199,16 +204,21 @@ function displayLinks(arr, title){
     $(`<h2 class="mt-4">${title}</h2>`).appendTo(resultsDiv);
     // If there were no links found, display message
     if(arr.length === 0){
+        // Display Not Found message
         $(`<div class="text-center fs-2">Not Found</div>`).appendTo(resultsDiv);
     }
     else{
+        // Toggle form state/styles
         toggleResultFormState(true);
+        // create parent div with class list-group
         const div = $('<div>', {
             class: 'list-group'
         });
+        // Loop through array append the link html to the div created above
         arr.forEach(link => {
             $(`<label class="list-group-item link"><input type="checkbox" name="links" class="form-check-input" value="" /><span class="mx-1 d-inline-block">${link}</span></label>`).appendTo(div);
         });
+        // append div to resultsDiv
         div.appendTo(resultsDiv);
     }
 }
