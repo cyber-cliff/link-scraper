@@ -23,23 +23,32 @@ filterInp.addEventListener("input", onFilterInputChange);
 * @returns 
 */
 async function getPageData(){
+    // Show loading toast...
     loadingToast.showToast();
     // Clear previous results
     clearPreviousResults();
+    // Send post request with the URL to the backend proxy
     return await axios.post(PROXY_URL, {
         url: urlInp.value.trim()
-    })
+    }) // Once it finished, return the data
     .then((response) => response.data)
-    .catch((error) => {
+    .catch((error) => { // Handle any errors
+        // Start by setting generic text
         let errorText = "An error occurred";
+        // Code 400 is a Bad Request, so change the text to reflect that
         if(error.response.data.status === 400){
             // Bad Request
             errorText = "Please provide a valid URL"
         }
+        // Create and show a toast with the error text inside
         createToast(errorText, 5000).showToast();
     });
 };
 
+/**
+ * Parse through the requested page and display the results
+ * @param {*} data - the html from the requested url
+ */
 async function parsePageData(data){
     // Parse the html
     const html = $.parseHTML( data );
@@ -73,54 +82,91 @@ async function parsePageData(data){
 
 
 
-
+/**
+ * Fires when Get Links button is clicked.
+ * @param {Event} e 
+ */
 function onGetUrlClick(e){
+    // prevent any default actions
     e.preventDefault();
+    // toggle the form state 
     toggleResultFormState(false);
-    getPageData()
+    // Get data from the inputted URL
+    getPageData() // Once the request finished, parse the page data
     .then((pageData) => parsePageData(pageData))
-    .catch((error) => {
+    .catch((error) => { // Handle any errors
+        // Generic error response...
         const errorText = "An error occurred";
         createToast(errorText, 5000).showToast();
         console.log(error);
         throw new Error(error);
     })
+    // finally, hide the loading toast
     .finally(() => loadingToast.hideToast());
 }
 
+/**
+ * Fires when the Check All button is clicked
+ * @param {Event} e 
+ */
 function onCheckAllClick(e){
+    // Loop over every element with attribute name="links"
     $('[name="links"]').each((index, value) => {
+        // Ignore any links that are currently invisible/hidden
         if($(value).parent().css("display") !== "none"){
             if(e.currentTarget.checked){
+                // If checked, then all links should be checked as well
                 value.checked = true;
             }
             else{
+                // if unchecked, all links shouldnt be checked
                 value.checked = false;
             }
         }
     });
 }
 
+/**
+ * Fires when the Copy Links button is clicked
+ * @param {Event} e 
+ */
 function onCopyLinksClick(e){
+    // Prevent any default actions
     e.preventDefault();
+    // Set links array
     let links = [];
+    // Get text value of every element with the attribute name="links" and add that text to the links array above
     $('input[name="links"]:checked').each((index, value) => {
         links.push($(value).parent().text());
     });
-    createToast("Copied " + links.length + " link(s)", 3000).showToast();
+    // Take each element in the array and combine it so that each link is on its own line
     let textToCopy = links.join("\n");
+    // Copy the links text to the clipboard
     navigator.clipboard.writeText(textToCopy);
+    // Create and show toast displaying how many links were copied
+    createToast("Copied " + links.length + " link(s)", 3000).showToast();
 }
 
+/**
+ * Fires when the search input changes
+ * @param {Event} e 
+ */
 function onFilterInputChange(e){
+    // Loop through each link and only display the ones that match the search filter, highlighting the matched search
     $('.link').each((index, value) => {
+        // First, remove any existing "mark" (highlight)
         $(value).unmark();
+        // If link includes the current value of the search input
         if(value.textContent.includes(e.currentTarget.value)){
+            // Create new mark using the link as a container
             const mark = new Mark(value);
+            // Mark/highlight the link where the text is equal to the current search input
             mark.mark(e.currentTarget.value);
+            // Display the link
             $(value).show();
         }
         else{
+            // If link doesnt contain filter text, hide the element
             $(value).hide();
         }
     });
@@ -143,6 +189,11 @@ function clearPreviousResults(){
     $(resultsDiv).empty();
 }
 
+/**
+ * Displays the links found on the page
+ * @param {Array} arr - the array of links
+ * @param {String} title - The title text to put in the h2
+ */
 function displayLinks(arr, title){
     // display section title
     $(`<h2 class="mt-4">${title}</h2>`).appendTo(resultsDiv);
@@ -162,8 +213,12 @@ function displayLinks(arr, title){
     }
 }
 
-function toggleResultFormState(disabled = true){
-    if(disabled){
+/**
+ * Toggles various styles and states based on the boolean value passed.
+ * @param {Boolean} active true if the form needs to be changed to active, false otherwise
+ */
+function toggleResultFormState(active = true){
+    if(active){
         // Need to change state to active
         copyLinksBtn.disabled = false;
         checkAllCheckbox.disabled = false;
@@ -181,6 +236,13 @@ function toggleResultFormState(disabled = true){
     }
 }
 
+/**
+ * Get all the unique, valid links from the html given a tag name and an attribute
+ * @param {*} html - The html returned from JQuerys parseHTML()
+ * @param {*} tag - An object representing a tag, with properties "name" and "attr"
+ * tag = { name: "a", attr: "src" }
+ * @returns {Array} - an array of links (strings)
+ */
 function getLinksFromHTML(html, tag){
     // Get all the tags from the parsed html
     const tags = $(html).find(tag.name);
