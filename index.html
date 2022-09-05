@@ -19,6 +19,16 @@
                 <label for="url" class="form-label">URL</label>
                 <input type="text" name="url" id="url" class="form-control" placeholder="https://example.com" />
             </div>
+            <div class="mb-3 d-flex">
+                <div class="form-check ps-0">
+                    <label for="images-checkbox" id="images-checkbox" class="form-check-label">Images</label>
+                    <input type="checkbox" id="check-all" name="images-checkbox" class="form-check-input" checked />
+                </div>
+                <div class="form-check">
+                    <label for="images-checkbox" id="images-checkbox" class="form-check-label">Hyperlinks</label>
+                    <input type="checkbox" id="check-all" name="images-checkbox" class="form-check-input" checked />
+                </div>
+            </div>
             <input type="submit" class="btn btn-primary" id="get-links-btn" value="Get Links">
         </form>
         <h1 class="mt-4 mb-3 text-center">Results</h1>
