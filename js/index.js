@@ -7,6 +7,8 @@ const checkAllCheckbox = document.getElementById("check-all");
 const checkAllLabel = document.getElementById("check-all-label");
 const filterLabel = document.getElementById("filter-label");
 const filterInp = document.getElementById("filter");
+const imagesCheckbox = document.getElementById("images-checkbox")
+const hyperlinksCheckbox = document.getElementById("hyperlinks-checkbox")
 
 // const PROXY_URL = "/link-scraper/api/index.php";
 const PROXY_URL = "./api/index.php"
@@ -41,44 +43,15 @@ async function getPageData(){
 async function parsePageData(data){
     // Parse the html
     const html = $.parseHTML( data );
-    // Get all the <a> tags from the parsed html
-    const anchorTags = $(html).find("a");
-    // Get all <img> tags from the parsed html
-    const imageTags = $(html).find("img")
-    // Get all the links (hrefs) from the <a> tags
-    const links = $.map(anchorTags, function (value, index) {
-        return $(value).attr("href")
-    });
-    const srcs = $.map(imageTags, function (value, index) {
-        return $(value).attr("src")
-    });
-    // Filter the links array to drop any links that arent useful (null, #id)
-    const validLinks = links.filter(link => {
-        if(link && !link.startsWith("#")){
-            return link;
-        }
-    });
-    let validUniqueLinks = new Set(validLinks);
-    validUniqueLinks = Array.from(validUniqueLinks);
-    // Convert all the relative links to absolute links
-    const finalLinks = $.map(validUniqueLinks, function (value, index) {
-        if(value.startsWith("https://") || value.startsWith("http://")){
-            return value;
-        }
-        else{
-            const url = new URL(urlInp.value.trim());
-            let prefix = url.origin;
-            if(prefix.endsWith("/") && value.startsWith("/")){
-                prefix = prefix.slice(0, -1);
-            }
-            else if(!prefix.endsWith("/") && !value.startsWith("/")){
-                prefix = prefix + "/";
-            }
-            return prefix + value;
-        }
-    });
-    displayLinks(finalLinks);
-    displayImageSources(srcs)
+    let links, srcs
+    if(hyperlinksCheckbox.checked){
+        links = getHyperlinksFromHTML(html)
+        displayLinks(links);
+    }
+    if(imagesCheckbox.checked){
+        srcs = getImageSrcsFromHTML(html)
+        displayImageSources(srcs)
+    }
 }
 
 
@@ -207,6 +180,49 @@ function toggleResultFormState(disabled = true){
         filterLabel.classList.add("text-muted","bg-white");
         filterInp.disabled = true;
     }
+}
+
+function getHyperlinksFromHTML(html){
+    // Get all the <a> tags from the parsed html
+    const anchorTags = $(html).find("a");
+    const links = $.map(anchorTags, function (value, index) {
+        return $(value).attr("href")
+    });
+    // Filter the links array to drop any links that arent useful (null, #id)
+    const validLinks = links.filter(link => {
+        if(link && !link.startsWith("#")){
+            return link;
+        }
+    });
+    let validUniqueLinks = new Set(validLinks);
+    validUniqueLinks = Array.from(validUniqueLinks);
+    // Convert all the relative links to absolute links
+    const finalLinks = $.map(validUniqueLinks, function (value, index) {
+        if(value.startsWith("https://") || value.startsWith("http://")){
+            return value;
+        }
+        else{
+            const url = new URL(urlInp.value.trim());
+            let prefix = url.origin;
+            if(prefix.endsWith("/") && value.startsWith("/")){
+                prefix = prefix.slice(0, -1);
+            }
+            else if(!prefix.endsWith("/") && !value.startsWith("/")){
+                prefix = prefix + "/";
+            }
+            return prefix + value;
+        }
+    });
+    return finalLinks
+}
+
+function getImageSrcsFromHTML(html){
+    // Get all <img> tags from the parsed html
+    const imageTags = $(html).find("img")
+    // Get all the links (hrefs) from the <a> tags
+    srcs = $.map(imageTags, function (value, index) {
+        return $(value).attr("src")
+    });
 }
 
 /**
